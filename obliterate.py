@@ -9,7 +9,7 @@ def remove_user(username_to_delete):
 
             db.session.delete(user)
             db.session.commit()
-            print(f"User {username_to_delete} was been fucking obliterated from existence ^^.")
+            print(f"User {username_to_delete} has been fucking obliterated from existence ^^.")
         else:
             print("User was not found, nothing was deleted")
 
