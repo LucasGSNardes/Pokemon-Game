@@ -4,7 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import random 
-
+import jwt
+import datetime
 
 app = Flask(__name__)
 app.secret_key = "my_super_not_obvious_key"
@@ -28,7 +29,7 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return '<h1>Welcome!</h1><p>Go to <a href="/register">Register</a> or <a href="/login">Login</a></p> or <a href="/battle">Battle</a>'
+    return '<h1>Welcome!</h1><p>Go to <a href="/register">Register</a> or <a href="/login">Login</a></p>'
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -64,10 +65,25 @@ def login():
         user = User.query.filter_by(username=uname).first()
 
         if user and check_password_hash(user.password, pword):
-            session["user_id"] = user.id #Stores the id ig
-            return redirect(url_for('battle'))
+            payload = {
+                'user_id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24) #valid for one day, or 24 hours if you're annoying
+            }
+            #Sign in with the secret key
+            token = jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
+            return f'''
+                        <h1>Login Success!</h1>
+                        <p>Your token is: <code>{token}</code></p>
+                        <script>
+                            // This saves the token in the browser's "Pocket"
+                            localStorage.setItem("token", "{token}");
+                            // Then moves to the battle page after 2 seconds
+                            setTimeout(() => {{ 
+                                window.location.href = "/battle?token={token}"; 
+                            }}, 2000);
+                        </script>
+                    '''
         else:
-            return "Invalid, get somethin' else. Probs username or password. <a href='/login>Try agai</a>"
+            return "Invalid, get somethin' else. Probs username or password. <a href='/login>Try again</a>"
         
     return '''<form method="post">
     Username: <input name= "username"><br>
@@ -75,12 +91,26 @@ def login():
     <input type ="submit" value="Login">
     </form>'''
 
-rules = {"rock": "paper", "paper": "scissors", "scissors": "rock"}
+rules = {"paper": "rock", "scissors": "paper", "rock": "scissors"}
 
 @app.route('/battle')
 def battle():
-    if "user_id" not in session:
-        return "<h3>You must be logged in to fight your pokemon.</h3><a href='/login'>Login here</a>"
+    token = request.args.get('token') #Pass it in the url for now
+    
+    if not token:
+        return "Missing Token dumbass!", 401
+    try:
+        #unseal the token
+        data = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+        current_user_id = data["user_id"]
+        user = db.session.get(User, current_user_id)
+        trainer_name = user.username
+        #if working, continue the battle logic
+    except jwt.ExpiredSignatureError:
+        return "Token expired. Login again", 401
+    except jwt.InvalidTokenError:
+        return "Fake Token! Nice try team rocket... gosh that's so corny.", 401
+    
 
     poke_id = random.randint(1,1010)
     api_url = f'https://pokeapi.co/api/v2/pokemon/{poke_id}'
@@ -94,16 +124,17 @@ def battle():
         pokemon_sprite = data["sprites"]["front_default"]
 
         return f'''
-            <div style="text-align: center; font-family: sans-serif;">
-                <h1>You encountered a wild {pokemon_name}!</h1>
-                <img src="{pokemon_sprite}" width:"600"; height="400">
-                <form action="/resolve-battle" method="POST">
-                <input type="hidden" name="pokemon_name" value="{pokemon_name}">
-                <button name="user_choice" value="rock">ROCK</button>
-                <button name="user_choice" value="paper">PAPER</button>
-                <button name="user_choice" value="scissors">SCISSORS</button>
-            </form>
-            </div>
+                <div style="text-align: center; font-family: sans-serif;">
+                    <h1>Trainer {trainer_name} encountered a wild {pokemon_name}!</h1>
+                    <img src="{pokemon_sprite}" width:"600"; height="400">
+                    <form action="/resolve-battle" method="POST">
+                        <input type="hidden" name="pokemon_name" value="{pokemon_name}">
+                        <input type="hidden" name="token" value="{token}">
+                        <button name="user_choice" value="rock">ROCK</button>
+                        <button name="user_choice" value="paper">PAPER</button>
+                        <button name="user_choice" value="scissors">SCISSORS</button>
+                    </form>
+                </div>
         '''
     return "The tall grass is empty... (API Error)", 500
 
@@ -111,17 +142,32 @@ def battle():
 def resolve():
     user_choice = request.form.get("user_choice")
     boss_name = request.form.get("pokemon_name")
+    token_from_form = request.form.get('token')
+
+    if not token_from_form:
+        return "Missing token! Your victory doesn't count.", 401
+    
+    try:
+        data = jwt.decode(token_from_form, app.config["SECRET_KEY"], algorithms=["HS256"])
+        current_user_id = data["user_id"]
+        user = db.session.get(User, current_user_id)
+        
+
+    except Exception:
+        return "Invalid Token, prob", 401
+    
+    #Fight logic finally
 
     options = ["rock", "paper", "scissors"]
     boss_choice = random.choice(options)
     if user_choice == boss_choice:
         result= "It's a tie, both struggled."
-    elif rules[boss_choice] == user_choice:
+
+    elif rules[user_choice] == boss_choice:
         result= f"You win! Your {user_choice} defeated {boss_name}'s {boss_choice}."
-        if "user_id" in session:
-                current_user = User.query.get(session["user_id"])
-                current_user.score += 10
-                db.session.commit()
+        user.score += 1
+        db.session.commit()
+
     else:
         result = f"You lost! {boss_name} defeated your {user_choice} using their {boss_choice}'s."
 
@@ -130,7 +176,8 @@ def resolve():
                 <p>You chose: <b>{user_choice.upper()}</b></p>
                 <p>{boss_name} chose: <b>{boss_choice.upper()}</b></p>
                 <h2>{result}</h2>
-                <a href="/battle"><button>Fight Another Boss</button></a>
+                <p>{user.username}'s current score: {user.score}</p>
+                <a href="/battle?token={token_from_form}"><button>Fight Another Boss</button></a>
                 </div>
                 ''' 
     
@@ -138,3 +185,4 @@ def resolve():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
