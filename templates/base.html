@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PokeBattle{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+</head>
+<body>
+
+    <nav style="margin-bottom: 20px;">
+        <a href="/">Home</a> |
+        <a href="/leaderboard">Leaderboard</a>
+    </nav>
+
+    <div class="card">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer style="margin-top: 20px; font-size: 0.8rem; opacity: 0.6;">
+        &copy; 2026 Elemental Arena
+    </footer>
+
+</body>
+</html>

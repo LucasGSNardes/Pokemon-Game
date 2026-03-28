@@ -123,19 +123,12 @@ def battle():
         pokemon_name = data["name"].capitalize()
         pokemon_sprite = data["sprites"]["front_default"]
 
-        return f'''
-                <div style="text-align: center; font-family: sans-serif;">
-                    <h1>Trainer {trainer_name} encountered a wild {pokemon_name}!</h1>
-                    <img src="{pokemon_sprite}" width:"600"; height="400">
-                    <form action="/resolve-battle" method="POST">
-                        <input type="hidden" name="pokemon_name" value="{pokemon_name}">
-                        <input type="hidden" name="token" value="{token}">
-                        <button name="user_choice" value="rock">ROCK</button>
-                        <button name="user_choice" value="paper">PAPER</button>
-                        <button name="user_choice" value="scissors">SCISSORS</button>
-                    </form>
-                </div>
-        '''
+        return render_template('battle.html', 
+                       trainer_name=trainer_name, 
+                       pokemon_name=pokemon_name, 
+                       pokemon_sprite=pokemon_sprite, 
+                       token=token)
+    
     return "The tall grass is empty... (API Error)", 500
 
 @app.route('/resolve-battle', methods=['POST'])

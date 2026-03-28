@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Battle - {{ pokemon_name }}{% endblock %}
+
+{% block content %}
+        <h1>Trainer {{ trainer_name }}</h1>
+        <h3>A wild {{ pokemon_name }} appeared!</h3>
+
+        <img src="{{ pokemon_sprite }}" width="200">
+
+        <form action="/resolve-battle" method="POST">
+            <input type="hidden" name="pokemon_name" value="{{ pokemon_name }}">
+            <input type="hidden" name="token" value="{{ token }}">
+
+            <div class="moves">
+                <button name="user_choice" value="rock">ROCK</button>
+                <button name="user_choice" value="paper">PAPER</button>
+                <button name="user_choice" value="scissors">SCISSORS</button>
+            </div>
+        </form>
+{% endblock %}
