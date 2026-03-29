@@ -167,15 +167,39 @@ def resolve():
         status = "Loss"
         result = f"You lost! {boss_name} defeated your {user_choice} using their {boss_choice}'s."
 
-    return render_template("resolve.html",
-                           status=status,
-                           trainer_name=user.username,
-                           token=token_from_form,
-                           result=result,
-                           score=user.score
-                           )
-    
+    #Store result data in the session 'notebook'
+    session['last_battle'] = {
+        'status': status,
+        'result': result,
+        'boss_choice': boss_choice,
+        'user_choice': user_choice,
+        'score': user.score,
+        'pokemon_name': boss_name
+    }
 
+    #Redirect to a dedicated result page
+    #Pass the token in the url so the play again button works
+    return redirect(url_for('battle_result', token=token_from_form))
+    
+@app.route('/battle_result')
+def battle_result():
+    token = request.args.get('token')
+
+    #pull the data from the 'notebook'
+    battle_data = session.get('last_battle')
+
+    if not battle_data:
+        return redirect(url_for('battle', token=token))
+    
+    return render_template("result.html",
+                           status=battle_data['status'],
+                           result=battle_data['result'],
+                           pokemon_name=battle_data['pokemon_name'],
+                           user_choice=battle_data['user_choice'],
+                           boss_choice=battle_data['boss_choice'],
+                           score=battle_data['score'],
+                           token=token
+                           )
 
 if __name__ == '__main__':
     app.run(debug=True)
