@@ -1,3 +1,5 @@
-So, this is just a dumb little project, you can tell by the fact that my documentation is full of mistakens and typos, kinda learning most things at once since I'm desperate for a job.
+A Rock-Paper-Scissors based game where you fight one of the 1025 pokemon on a luck-based game.
 
-Requirements: Flask, SQLAlchemy, SQLite
+Current features include: Login, Registration, Leaderboard, Token-based navigation and the Battles.
+
+Requirements: SQLite, Flask, SQLAlchemy and JWTs
