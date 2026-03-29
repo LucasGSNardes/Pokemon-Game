@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Register New Trainer{% endblock %}
+
+{% block content %}
+
+<div class="auth-container">
+    <h1>New Trainer Registration</h1>
+    <p>Sign up to start and collect points!</p>
+
+    <form method="POST" action="/register">
+        <div style="margin-bottom: 15px;">
+            <label>Choose a Username:</label><br>
+            <input name="username" placeholder="e.g. AshKetchum" required autocomplete="off">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label>Choose a Password:</label><br>
+            <input type="password" name="password" placeholder="Min. 6 characters" required>
+        </div>
+
+        <button type="submit" style="width: 100%; max-width: 200px;">Begin Journey</button>
+    </form>
+
+    <hr style="opacity: 0.2; margin: 20px 0;">
+
+    <p>Already a trainer <a href="/login" style="color: #e94560;">Login here</a></p>
+</div>
+{% endblock %}

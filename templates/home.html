@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to PokeBattle{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 40px;">
+    <h1 style="font-size: 3rem; color: #e94560; text-shadow: 2px 2px #0f3460;">PokeBattle Arena</h1>
+    <p style="font-size: 1.2rem; opacity: 0.8;">The ultimate Rock-Paper-Scissors challenge with a Pokémon twist.</p>
+
+    <div class="mascot-reveal" style="margin: 40px 0;">
+        <h3>Featured Pokémon of the Hour:</h3>
+        <img src="{{ sprite }}" alt="{{ name }}" style="width: 250px; filter: drop-shadow(0 0 15px rgba(233, 69, 96, 0.5));">
+        <h2 style="color: #4CAF50;">{{ name }}</h2>
+    </div>
+
+    <div class="cta-buttons" style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+        <a href="/login"><button style="background: #0f3460;">Login to Play</button></a>
+        <a href="/register"><button style="background: #e94560;">Join the Arena</button></a>
+    </div>
+    
+    <div style="margin-top: 40px; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+        <a href="/leaderboard" style="color: #4CAF50;">View Global Leaderboard</a>
+    </div>
+</div>
+{% endblock %}

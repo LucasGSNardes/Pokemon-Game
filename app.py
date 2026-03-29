@@ -29,7 +29,20 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return '<h1>Welcome!</h1><p>Go to <a href="/register">Register</a> or <a href="/login">Login</a></p>'
+    # Pick a cool "mascot" for the home page
+    poke_id = random.randint(1, 151) # Original 151 for nostalgia
+    api_url = f'https://pokeapi.co/api/v2/pokemon/{poke_id}'
+    response = requests.get(api_url)
+    
+    mascot_name = "Pikachu"
+    mascot_sprite = ""
+    
+    if response.status_code == 200:
+        data = response.json()
+        mascot_name = data["name"].capitalize()
+        mascot_sprite = data["sprites"]["other"]["official-artwork"]["front_default"]
+
+    return render_template('home.html', name=mascot_name, sprite=mascot_sprite)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -49,11 +62,7 @@ def register():
             db.session.rollback()
             return "<h3>That username is already taken.</h3><a href='/register'>Try a different name</a>"
 
-    return '''<form method="post">
-    Username: <input name= "username"><br>
-    Password: <input type="password" name="password"><br>
-    <input type ="submit" value="Register">
-    </form>'''
+    return render_template("register.html")
 
 #Login route apparently
 @app.route('/login', methods=['GET', 'POST'])
