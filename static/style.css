@@ -55,3 +55,14 @@ input:focus {
     border-color: #e94560;
     outline: none;
 }
+
+/* Makes the first row of any table gold and slightly larger */
+tbody tr:first-child {
+    background: rgba(255, 215, 0, 0.1);
+    font-size: 1.2rem;
+}
+
+tbody tr:hover {
+    background: #16213e; /* Highlights the row when someone hovers over it */
+    transition: 0.3s;
+}

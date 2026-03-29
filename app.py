@@ -6,6 +6,7 @@ import requests
 import random 
 import jwt
 import datetime
+from sqlalchemy import select, desc
 
 app = Flask(__name__)
 app.secret_key = "my_super_not_obvious_key"
@@ -29,8 +30,8 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    # Pick a cool "mascot" for the home page
-    poke_id = random.randint(1, 151) # Original 151 for nostalgia
+    # Pick a cool pokemon for the home page
+    poke_id = random.randint(1, 151) # Original 151
     api_url = f'https://pokeapi.co/api/v2/pokemon/{poke_id}'
     response = requests.get(api_url)
     
@@ -205,6 +206,18 @@ def battle_result():
                            score=battle_data['score'],
                            token=token
                            )
+
+@app.route('/leaderboard')
+def leaderboard():
+    #Create the "Statement" (The Blueprint of the query)
+    #Select the User, order by score descending, and limit to 10
+    stmt = db.select(User).order_by(User.score.desc()).limit(10)
+    
+    #Execute the statement and get the results
+    # .scalars() turns the database rows into actual "User" objects that can be used
+    top_trainers = db.session.execute(stmt).scalars().all()
+    
+    return render_template('leaderboard.html', trainers=top_trainers)
 
 if __name__ == '__main__':
     app.run(debug=True)

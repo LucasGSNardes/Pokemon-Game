@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Global Leaderboard{% endblock %}
+
+{% block content %}
+<div class="leaderboard-container" style="text-align: center; padding: 20px;">
+    <h1 style="color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">Top Trainers</h1>
+    <p>Only the strongest reach the top 10.</p>
+
+    <table style="width: 100%; max-width: 500px; margin: 30px auto; border-collapse: collapse; background: #1a1a2e; border-radius: 10px; overflow: hidden;">
+        <thead style="background: #e94560; color: white;">
+            <tr>
+                <th style="padding: 15px;">Rank</th>
+                <th style="padding: 15px;">Trainer</th>
+                <th style="padding: 15px;">Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trainer in trainers %}
+            <tr style="border-bottom: 1px solid #0f3460;">
+                <td style="padding: 15px; font-weight: bold; color: #4CAF50;">
+                    #{{ loop.index }}
+                </td>
+                <td style="padding: 15px;">{{ trainer.username }}</td>
+                <td style="padding: 15px; font-weight: bold; color: #ffd700;">
+                    {{ trainer.score }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="/"><button style="background: #0f3460; margin-top: 20px;">Back to Home</button></a>
+</div>
+{% endblock %}
