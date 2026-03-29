@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+                <div class="result-container">
+                    {% if status =="Win" %}
+                        <h1 style="color: #4CAF50">You won!</h1>
+                        <p>You gained +1 score. Keep going.</p>
+                        <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdGdlc3BudXptZWEzYmcydTl3MXZxbnh6cTF0OXc3ZWNlb2JnMHAzdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GNnPukmWvgIr2AaMNf/giphy.gif" width="200">
+                    {% elif status =="Loss" %}
+                        <h1 style="color: #f44336">Defeat...</h1>
+                        <p>Better luck next time {{ trainer_name }}...</p>
+                        <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGhlMnZ3a3g3c2tpbGRwYXV1ejgwZG9rMGtmdWxuenV2Z3J0ZW1xcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kNSeTs31XBZ3G/giphy.gif" width="200">
+                    {% else %}
+                        <h1 style="color: #ff9800">A tie... pathetic.</h1>
+                        <p>Neither backed down.</p>
+                        <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmgzdGwyMHJlZXlwcmZsZTM1ZDJxeDNodWZja29pamZvaGVsYmlqOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Qv7WFppXtkqkM/giphy.gif" width="200">
+                    {% endif %}
+                    
+                    <hr>
+                    <h2>{{ result }}</h2>
+                    <p>Your Total Score: {{ score }}</p>
+
+                    <a href="/battle?token={{ token }}">
+                        <button>Fight Another Pokemon</button>
+                    </a>
+                </div>
+{% endblock %}

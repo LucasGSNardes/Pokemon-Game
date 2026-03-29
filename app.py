@@ -154,25 +154,26 @@ def resolve():
     options = ["rock", "paper", "scissors"]
     boss_choice = random.choice(options)
     if user_choice == boss_choice:
+        status = "Tie"
         result= "It's a tie, both struggled."
 
     elif rules[user_choice] == boss_choice:
+        status = "Win"
         result= f"You win! Your {user_choice} defeated {boss_name}'s {boss_choice}."
         user.score += 1
         db.session.commit()
 
     else:
+        status = "Loss"
         result = f"You lost! {boss_name} defeated your {user_choice} using their {boss_choice}'s."
 
-    return f'''<div style="text-align: center;">
-                <h1>Battle Results</h1>
-                <p>You chose: <b>{user_choice.upper()}</b></p>
-                <p>{boss_name} chose: <b>{boss_choice.upper()}</b></p>
-                <h2>{result}</h2>
-                <p>{user.username}'s current score: {user.score}</p>
-                <a href="/battle?token={token_from_form}"><button>Fight Another Boss</button></a>
-                </div>
-                ''' 
+    return render_template("resolve.html",
+                           status=status,
+                           trainer_name=user.username,
+                           token=token_from_form,
+                           result=result,
+                           score=user.score
+                           )
     
 
 
