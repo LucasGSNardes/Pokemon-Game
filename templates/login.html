@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="auth-container">
+    <h1>Trainer Login</h1>
+    <p>Enter your credentials to enter the tall grass.</p>
+
+    <form method="POST" action="/login">
+        <div style="margin-bottom: 15px;">
+            <label>Username:</label><br>
+            <input name="username" required autocomplete="off"
+                    style="padding: 10px; border-radius: 5px; border: 1px solid #0f3460; background: #1a1a2e; color: white;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label>Password:</label><br>
+            <input type="password" name="password" required
+                    style="padding: 10px; border-radius: 5px; border: 1px solid #0f3460; background: #1a1a2e; color: white;">
+        </div>
+
+        <button type="submit" style="width: 100%; max-width: 200px;">Join Battle</button>
+    </form>
+
+    <hr style="opacity: 0.2; margin: 20px 0;">
+
+    <p>New trainer? <a href="/register" style="color: #e94560;">Create an account here</a></p>
+</div>
+{% endblock %}

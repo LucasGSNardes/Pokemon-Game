@@ -85,11 +85,7 @@ def login():
         else:
             return "Invalid, get somethin' else. Probs username or password. <a href='/login>Try again</a>"
         
-    return '''<form method="post">
-    Username: <input name= "username"><br>
-    Password: <input type="password" name="password"><br>
-    <input type ="submit" value="Login">
-    </form>'''
+    return render_template("login.html")
 
 rules = {"paper": "rock", "scissors": "paper", "rock": "scissors"}
 
